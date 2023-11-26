@@ -14,6 +14,7 @@ const client = new Client({
     ],
 });
 
+//.env here
 client.login(process.env.DISC_TOKEN);
 console.log("Connection running");
 
