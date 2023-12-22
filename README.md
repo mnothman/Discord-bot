@@ -3,4 +3,4 @@ DISC_TOKEN="token for bot"
 MODERATOR_CHANNEL_ID="sends message to specific channel for moderators"
 ALLOWED_CHANNELS="allowed channels (copy channel id) for links where links are allowed"
 
-For profanity filter: 
+Coming changes: dashboard for bot to allow profanity, links, spam in channels. currently have it manually for links only
