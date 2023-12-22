@@ -27,12 +27,14 @@ console.log("Connection running");
 // const musicPlayer = new MusicPlayer();
 
 
-client.on('messageCreate', (message) => {
+client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
     handleProfanity(message);
     handleSuspiciousLinks(message);
     handleSpam(message);
+
+    
 
 
 });
