@@ -26,7 +26,7 @@ export async function handleProfanity(message) {
 
             const profanityThreshold = 3;
             if (userProfanityCount + 1 >= profanityThreshold) {
-                const timeoutDuration = 30 * 60 * 1000; // 30 minutes
+                const timeoutDuration = 5 * 60 * 1000; 
 
                 const member = message.guild.members.cache.get(userId);
                 if (member) {
@@ -34,7 +34,7 @@ export async function handleProfanity(message) {
                     await member.timeout(timeoutDuration, 'Exceeded profanity threshold');
                     profanityCounts.delete(userId);
 
-                    const moderatorChannelId = process.env.MODERATOR_CHANNEL_ID;
+                    const moderatorChannelId = process.env.MODERATOR_CHANNEL_ID; //later need a way to make this dyanmic for each server, potentially owner can input their channel id and we can update it locally
                     const moderatorChannel = message.guild.channels.cache.get(moderatorChannelId);
 
                     if (moderatorChannel) {
@@ -59,7 +59,6 @@ export async function handleProfanity(message) {
 
 
 function handleProfanityError(error) {
-    // Handle errors specific to the profanity handling logic
     if (error instanceof DiscordAPIError && error.code === 10008) {
         console.log('Message not found. It may have already been deleted.');
     } else {
