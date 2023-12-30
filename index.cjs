@@ -2,6 +2,8 @@ const { Client, Collection, GatewayIntentBits, Events } = require('discord.js');
 // const { handleProfanity } = require('./Profanitytimeout.js');
 // const { handleSuspiciousLinks } = require('./MessageFilter.js');
 // const { handleSpam } = require('./SpamPrevention.js');
+const { Translate } = require('@google-cloud/translate').v2;
+const langdetect = require('langdetect');
 const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
@@ -28,18 +30,6 @@ client.once(Events.ClientReady, readyClient => { //new
 client.login(process.env.DISC_TOKEN);
 console.log("Connection running");
 
-// const spotifyApi = new SpotifyWebApi({
-//     clientId: process.env.SPOTIFY_CLIENT_ID,
-//     clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-//     redirectUri: process.env.SPOTIFY_CLIENT_DISCORD,
-//   });
-  
-// const commands = [
-//     new PlayCommand(),
-//     // Add other commands as needed
-//   ];
-
-
 client.commands = new Collection();
 
 const foldersPath = path.join(__dirname, 'commands');
@@ -60,26 +50,6 @@ for (const folder of commandFolders) {
 	}
 }
 
-    // for (const file of commandFiles) {
-    //     // Create the full path to the command file
-    //     const filePath = path.join(commandsPath, file);
-
-    //     // Import the command module
-    //     import(filePath)
-    //         .then(command => {
-    //             // Check if the required properties exist
-    //             if ('data' in command && 'execute' in command) {
-    //                 // Set a new item in the Collection with the key as the command name and the value as the exported module
-    //                 client.commands.set(command.data.name, command);
-    //             } else {
-    //                 console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error(`Error importing command at ${filePath}: ${error.message}`);
-    //         });
-    // }
-// }
 
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
@@ -103,6 +73,9 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 });
 
+const translate = new Translate({
+    key: process.env.GOOGLE_TRANSLATION_API_KEY, 
+  });
 
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
@@ -111,11 +84,25 @@ client.on('messageCreate', async (message) => {
     // handleSuspiciousLinks(message);
     // handleSpam(message);
 
-    if (message.content.toLowerCase() === "/ping") {
-        message.reply("The **API** is " + client.ws.ping + "ms. " + 'The **message** ping is ' + "'" + (Date.now() - message.createdTimestamp) + "ms'.")
-    };
+    //potentially make a translate as well where it takes in input and translates (check cost of api)
 
-});
+    //NEED TO FIX THE LANGAUGE DETECTION IT DOESNT FULLY WORK
+    const detectedLanguages = langdetect.detect(message.content);
+
+    const detectedLanguage = Array.isArray(detectedLanguages) && detectedLanguages.length > 0
+      ? detectedLanguages[0].lang
+      : 'en';
+  
+    if (detectedLanguage !== 'en') {
+      try {
+        const [translation] = await translate.translate(message.content, 'en');
+          message.reply(`Detected language: ${detectedLanguage}. Translated to English: ${translation}`);
+      } catch (error) {
+        console.error('Error translating:', error);
+        message.reply('An error occurred while translating the message.');
+      }
+    }
+  });
 
 
 
