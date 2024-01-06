@@ -1,13 +1,82 @@
 const { Client, Collection, GatewayIntentBits, Events } = require('discord.js');
-// const { handleProfanity } = require('./Profanitytimeout.js');
-// const { handleSuspiciousLinks } = require('./MessageFilter.js');
-// const { handleSpam } = require('./SpamPrevention.js');
+const { handleProfanity } = require('./Profanitytimeout.js');
+const { handleSuspiciousLinks } = require('./MessageFilter.js');
+const { handleSpam } = require('./SpamPrevention.js');
 const { Translate } = require('@google-cloud/translate').v2;
 const langdetect = require('langdetect');
 const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
 dotenv.config();
+const express = require('express');
+// const { port } = require('./config.json');
+// const { request } = require('undici');
+const axios = require('axios');
+
+const { clientId, clientSecret, port } = require('./config.json');
+
+const app = express();
+
+
+// app.get('/', (request, response) => {
+//   console.log(`The access code is: ${request.query.code}`);
+// 	return response.sendFile('index.html', { root: '.' });
+// });
+
+app.get('/', async ({ query }, response) => {
+	const { code } = query;
+
+	if (code) {
+		try {
+			const tokenResponseData = await request('https://discord.com/api/oauth2/token', {
+				method: 'POST',
+				body: new URLSearchParams({
+					client_id: clientId,
+					client_secret: clientSecret,
+					code,
+					grant_type: 'authorization_code',
+					redirect_uri: `http://localhost:${port}`,
+					scope: 'identify',
+				}).toString(),
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+			});
+
+			const oauthData = await tokenResponseData.body.json();
+      const userResult = await request('https://discord.com/api/users/@me', {
+				headers: {
+					authorization: `${oauthData.token_type} ${oauthData.access_token}`,
+				},
+			});
+
+			console.log(await userResult.body.json());
+		} catch (error) {
+			// NOTE: An unauthorized token will not throw an error
+			// tokenResponseData.statusCode will be 401
+			console.error(error);
+		}
+	}
+
+	return response.sendFile('index.html', { root: '.' });
+});
+// 			console.log(oauthData);
+// 		} catch (error) {
+// 			// NOTE: An unauthorized token will not throw an error
+// 			// tokenResponseData.statusCode will be 401
+// 			console.error(error);
+// 		}
+// 	}
+
+// 	return response.sendFile('index.html', { root: '.' });
+// });
+
+
+app.listen(port, () => console.log(`App listening at http://localhost:${port}`));
+
+
+
+
 //project was originally in js, changed to cjs
 
 const client = new Client({
@@ -50,7 +119,6 @@ for (const folder of commandFolders) {
 	}
 }
 
-
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
@@ -77,35 +145,68 @@ const translate = new Translate({
     key: process.env.GOOGLE_TRANSLATION_API_KEY, 
   });
 
-client.on('messageCreate', async (message) => {
+  client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
-    // handleProfanity(message);
-    // handleSuspiciousLinks(message);
-    // handleSpam(message);
+    const profanityDeleted = await handleProfanity(message);
 
-    //potentially make a translate as well where it takes in input and translates (check cost of api)
+    if (!profanityDeleted) {
+        handleSuspiciousLinks(message);
+        handleSpam(message);
 
-    //NEED TO FIX THE LANGAUGE DETECTION IT DOESNT FULLY WORK
-    const detectedLanguages = langdetect.detect(message.content);
+        // Translation logic here (check if profanity was not deleted)
+        const detectedLanguages = langdetect.detect(message.content);
+        const detectedLanguage = Array.isArray(detectedLanguages) && detectedLanguages.length > 0
+            ? detectedLanguages[0].lang
+            : 'en';
 
-    const detectedLanguage = Array.isArray(detectedLanguages) && detectedLanguages.length > 0
-      ? detectedLanguages[0].lang
-      : 'en';
-  
-    if (detectedLanguage !== 'en') {
-      try {
-        const [translation] = await translate.translate(message.content, 'en');
-          message.reply(`Detected language: ${detectedLanguage}. Translated to English: ${translation}`);
-      } catch (error) {
-        console.error('Error translating:', error);
-        message.reply('An error occurred while translating the message.');
-      }
+        if (detectedLanguage !== 'en') {
+            try {
+                const [translation] = await translate.translate(message.content, 'en');
+                message.reply(`Detected language: ${detectedLanguage}. Translated to English: ${translation}`);
+            } catch (error) {
+                console.error('Error translating:', error);
+                message.reply('An error occurred while translating the message.');
+            }
+        }
     }
-  });
+});
+
+  //changed due to profanity and translation clashing
+// client.on('messageCreate', async (message) => {
+//     if (message.author.bot) return;
+
+//     handleProfanity(message);
+//     handleSuspiciousLinks(message);
+//     handleSpam(message);
+
+//     //potentially make a translate as well where it takes in input and translates (check cost of api)
+
+//     //NEED TO FIX THE LANGAUGE DETECTION IT DOESNT FULLY WORK
+//     const detectedLanguages = langdetect.detect(message.content);
+
+//     const detectedLanguage = Array.isArray(detectedLanguages) && detectedLanguages.length > 0
+//       ? detectedLanguages[0].lang
+//       : 'en';
+  
+//     if (detectedLanguage !== 'en') {
+//       try {
+//         const [translation] = await translate.translate(message.content, 'en');
+//           message.reply(`Detected language: ${detectedLanguage}. Translated to English: ${translation}`);
+//       } catch (error) {
+//         console.error('Error translating:', error);
+//         message.reply('An error occurred while translating the message.');
+//       }
+//     }
+//   });
 
 
+//new
 
+  //will have an enable/disable for things like translate/profanity etc, will also have a place where welcome messages can be sent
+
+//manage server permission allows a user to add bots to server, so when the user logs into our dashboard it will display the servers that they have proper permissions in AND not servers that the bot is already in. 
+//if bot is not already in server there will be a button that says join, if the bot is in that server it will say configure (so we can figure where profanity/link/translate is allowed)
 
 
 // import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';

@@ -42,6 +42,11 @@ const rest = new REST().setToken(token);
 			Routes.applicationGuildCommands(clientId, guildId),
 			{ body: commands },
 		);
+		// TO MAKE GUILD COMMANDS GLOBAL YOU COMMENT THE TOP DATA = AND THEN UNCOMMENT THE BELOW (REMOVE GUILDID). DO THIS AFTER TESTING AND WHAT NOT
+		// const data = await rest.put(
+		// 	Routes.applicationCommands(clientId),
+		// 	{ body: commands },
+		// );
 
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
 	} catch (error) {
