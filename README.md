@@ -6,4 +6,7 @@ MODERATOR_CHANNEL_ID: for update messages sent to moderation team channel
 ALLOWED_CHANNELS: channels where profanity/links/etc allowed (config this more later)
 
 node deploy-commands.cjs //for command updates
-node . //run project 
+
+run project:
+node . //run project backend
+npx vite dev --host --port 8000 //run project frontend
