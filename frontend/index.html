@@ -23,6 +23,8 @@
     />
 
     <script src="assets/js/jquery-3.6.0.js"></script>
+    <script type="application/javascript" src="login.js"></script>
+
   </head>
   <body>
     <!-- Back To Top Start -->
@@ -92,12 +94,15 @@
 
           <div class="navbar-item">
             <div class="buttons">
-              <a href="https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=identify+guilds+email+connections+gdm.join+guilds.join" class="button is-blurple">
+              <!-- <a href="https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=identify+guilds+email+connections+gdm.join+guilds.join" class="button is-blurple">
                 <strong
                   ><i class="fa-solid fa-right-to-bracket mr-2"></i>
                   Login</strong
                 >
-              </a>
+              </a> -->
+              <button id="login" class="button is-blurple">
+                <strong><i class="fa-solid fa-right-to-bracket mr-2"></i> Login</strong>
+              </button>
             </div>
           </div>
         </div>
@@ -125,8 +130,11 @@
               <!-- <a id="login" style="display: none;" href="https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=identify+guilds+email+connections+gdm.join+guilds.join">Login</a> -->
               <!-- <a id="login" style="display: none;" href="https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&response_type=token&redirect_uri=http%3A%2F%2Flocalhost%3A5000&scope=identify+email+connections+guilds+gdm.join+guilds.join">Login</a> -->
               <!-- <button id="add-to-server">Add to your server</button> -->
+<!-- need to switch this link to the login one  -->
+<!-- https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=bot -->
+        <a href="https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=bot" class="button is-primary is-outlined">
 
-                <a href="https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=identify+guilds+email+connections+gdm.join+guilds.join" class="button is-primary is-outlined">
+                <!-- <a href="https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=identify+guilds+email+connections+gdm.join+guilds.join" class="button is-primary is-outlined"> -->
                   <strong><i class="fa-solid fa-crown"></i> Add to server</strong>
                 </a>
               </div>
@@ -402,5 +410,16 @@
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
     <script src="assets/js/script.js"></script>
+    <script>
+      document.getElementById('login').addEventListener('click', () => {
+        // Trigger the login functionality from login.js
+        // You may need to adapt this based on your specific requirements
+        // For example, you might want to open a modal or show a login form.
+        // The code below redirects to the Discord authorization URL.
+        // window.location.href = 'https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=bot';
+        
+                window.location.href = 'https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=identify+guilds+email+connections+gdm.join+guilds.join';
+      });
+    </script>
   </body>
 </html>
