@@ -23,6 +23,9 @@ const app = express();
 // 	return response.sendFile('index.html', { root: '.' });
 // });
 
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+
 app.get('/', async ({ query }, response) => {
 	const { code } = query;
 
