@@ -13,7 +13,7 @@ html {
 }
 
 .bg-base {
-  background-color: #2173cf !important;
+  background-color: #1a2634  !important;
    /*connected to index.html <path
         fill="#2173cf"
         fill-opacity="1"
@@ -99,7 +99,7 @@ html {
 
 nav,
 .navbar-menu {
-  background-color: #393944 !important;
+  background-color: #1a2634  !important;
   /*connected to index.html <path
         fill="#2173cf"
         fill-opacity="1"
