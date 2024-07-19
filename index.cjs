@@ -157,23 +157,25 @@ const translate = new Translate({
         handleSuspiciousLinks(message);
         handleSpam(message);
 
-        // Translation logic here (check if profanity was not deleted)
-        const detectedLanguages = langdetect.detect(message.content);
-        const detectedLanguage = Array.isArray(detectedLanguages) && detectedLanguages.length > 0
-            ? detectedLanguages[0].lang
-            : 'en';
+// translation logic (need !translate at the end of the message)
+		if (message.content.toLowerCase().endsWith('!translate')) {
+			const contentToTranslate = message.content.slice(0, -10).trim(); // Remove the '!translate' part
+			const detectedLanguages = langdetect.detect(contentToTranslate);
+			const detectedLanguage = Array.isArray(detectedLanguages) && detectedLanguages.length > 0 ? detectedLanguages[0].lang : 'en';
 
-        if (detectedLanguage !== 'en') {
-            try {
-                const [translation] = await translate.translate(message.content, 'en');
-                message.reply(`Detected language: ${detectedLanguage}. Translated to English: ${translation}`);
-            } catch (error) {
-                console.error('Error translating:', error);
-                message.reply('An error occurred while translating the message.');
-            }
-        }
-    }
-});
+			if (detectedLanguage !== 'en') {
+				try {
+					const [translation] = await translate.translate(contentToTranslate, 'en');
+					message.reply(`Detected language: ${detectedLanguage}. Translated to English: ${translation}`);
+				} catch (error) {
+					console.error('Error translating:', error);
+					message.reply('An error occurred while translating the message.');
+				}
+			}
+		}
+	}
+	});
+
 
   //changed due to profanity and translation clashing
 // client.on('messageCreate', async (message) => {
