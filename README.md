@@ -1,3 +1,17 @@
+Features: <br />
+Using the Google Cloud Translate API, simply add !translate at the end of a message, and it will automatically detect and translate the message to the set language (default is English). <br />  <br />
+[
+![translate1](https://github.com/user-attachments/assets/5270edae-d1e2-402f-adfd-64b4954161dc)
+](url)   <br />
+
+![translate2](https://github.com/user-attachments/assets/94ab8d16-bf7b-4294-9a07-32fd1793a8df) <br /> <br />
+
+Our bot features a robust automatic profanity filter to maintain a respectful environment, and can automatically time users out. Includes a common list of banned words and the ability to add custom words to the filter by moderators. This feature can be turned off or enabled/disabled in chosen chat rooms by moderators. <br /> <br />
+Example of 3 separate messages being sent with profanity:  <br />  <br />
+![profanityfilter1](https://github.com/user-attachments/assets/05698dcb-537a-4298-9dab-2c2bea68fa0e)  <br />  <br />
+
+Our bot includes a spam prevention feature that automatically detects and manages spam messages. If a user sends multiple messages in quick succession, the bot temporarily restricts the user to prevent further spam, ensuring a clean and orderly chat environment. This feature can be turned off or enabled/disabled in chosen chat rooms by moderators.  <br />  <br />
+![spammingexample](https://github.com/user-attachments/assets/fe2b72c4-a946-4f7c-9795-e502b325cbdf)  <br />  <br />  <br />  <br />
 
 .env missing:
 DISC_TOKEN="token for bot"
