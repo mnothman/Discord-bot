@@ -1,7 +1,7 @@
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
-import { handleProfanity } from './commands/Profanitytimeout.js';
-import { handleSuspiciousLinks } from './commands/MessageFilter.js'; 
-import { handleSpam } from './commands/SpamPrevention.js';
+import { handleProfanity } from './nonslashcommands/Profanitytimeout.js';
+import { handleSuspiciousLinks } from './nonslashcommands/MessageFilter.js'; 
+import { handleSpam } from './nonslashcommands/SpamPrevention.js';
 import dotenv from 'dotenv';
 dotenv.config();
 

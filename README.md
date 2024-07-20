@@ -24,7 +24,9 @@ More button displays link: <br />
 <br />  <br />
 
 
-
+To update slash commands (make global or specific guild), run: node deploy-commands.cjs  <br />
+Read comments on line 45 to make global (only do after testing) <br />
+https://discordjs.guide/creating-your-bot/command-deployment.html#guild-commands <br />
 
 
 .env missing:
