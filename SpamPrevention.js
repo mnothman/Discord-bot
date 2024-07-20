@@ -65,4 +65,5 @@ function handleSpamError(error) {
 // Export the function
 module.exports = {
     handleSpam,
+    handleSpamError,
 };

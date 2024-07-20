@@ -2,6 +2,7 @@ const { Client, Collection, GatewayIntentBits, Events, ActionRowBuilder, ButtonB
 const { handleProfanity } = require('./Profanitytimeout.js');
 const { handleSuspiciousLinks } = require('./MessageFilter.js');
 const { handleSpam } = require('./SpamPrevention.js');
+const { handleUnsafeSearch, handleUnsafeSearchError, isUnsafeContent } = require('./UnsafeSearch.js');
 const { Translate } = require('@google-cloud/translate').v2;
 const langdetect = require('langdetect');
 const dotenv = require('dotenv');
@@ -39,7 +40,7 @@ app.get('/', async ({ query }, response) => {
 			});
 
 			const oauthData = await tokenResponseData.body.json();
-      const userResult = await request('https://discord.com/api/users/@me', {
+			const userResult = await request('https://discord.com/api/users/@me', {
 				headers: {
 					authorization: `${oauthData.token_type} ${oauthData.access_token}`,
 				},
@@ -70,14 +71,14 @@ app.get('/', async ({ query }, response) => {
 app.listen(port, () => console.log(`App listening at http://localhost:${port}`));
 
 const client = new Client({
-    intents: [
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.DirectMessages,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildVoiceStates,
-    ],
+	intents: [
+		GatewayIntentBits.GuildMembers,
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.DirectMessages,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+		GatewayIntentBits.GuildVoiceStates,
+	],
 });
 //https://discordjs.guide/creating-your-bot/command-handling.html#loading-command-files
 
@@ -132,82 +133,90 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 const translate = new Translate({
-    key: process.env.GOOGLE_TRANSLATION_API_KEY, 
-  });
+	key: process.env.GOOGLE_TRANSLATION_API_KEY,
+});
 
 
 client.on('messageCreate', async (message) => {
-if (message.author.bot) return;
+	if (message.author.bot) return; //ignore bot messages
 
-const profanityDeleted = await handleProfanity(message);
+	const profanityDeleted = await handleProfanity(message);
 
-if (!profanityDeleted) {
-	handleSuspiciousLinks(message);
-	handleSpam(message);
+	if (!profanityDeleted) {
+		handleSuspiciousLinks(message);
+		handleSpam(message);
 
-	if (message.content.toLowerCase().endsWith('!search')) {
-		const query = message.content.slice(0, -7).trim();
-		const apiKey = process.env.GOOGLE_CUSTOM_SEARCH_API_KEY;
-		const cx = process.env.GOOGLE_CUSTOM_SEARCH_UNIQUE_ID;
-		const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(query)}`;
+		if (message.content.toLowerCase().endsWith('!search')) {
+			const query = message.content.slice(0, -7).trim();
+			const apiKey = process.env.GOOGLE_CUSTOM_SEARCH_API_KEY;
+			const cx = process.env.GOOGLE_CUSTOM_SEARCH_UNIQUE_ID;
+			const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(query)}&safe=active`;
 
-		console.log('Search URL:', searchUrl);
+			console.log('Search URL:', searchUrl);
 
-		try {
-			const response = await axios.get(searchUrl);
-			if (response.data.items && response.data.items.length > 0) {
-				const firstResult = response.data.items[0];
-				const shortAnswer = `${firstResult.title}\n${firstResult.snippet}`;
-				const fullAnswer = `${firstResult.title}\n${firstResult.snippet}\n${firstResult.link}`;
-
-				const row = new ActionRowBuilder().addComponents(
-					new ButtonBuilder()
-						.setCustomId('showMore')
-						.setLabel('Show More')
-						.setStyle(ButtonStyle.Primary)
-				);
-
-
-				const sentMessage = await message.reply({ content: shortAnswer, components: [row] });
-
-				const filter = i => i.customId === 'showMore' && i.user.id === message.author.id;
-				const collector = sentMessage.createMessageComponentCollector({ filter, time: 15000 });
-
-				collector.on('collect', async i => {
-					if (i.customId === 'showMore') {
-						await i.update({ content: fullAnswer, components: [] });
-					}
-				});
-
-				collector.on('end', collected => {
-					if (collected.size === 0) {
-						sentMessage.edit({ components: [] });
-					}
-				});
-			} else {
-				message.reply('No results found.');
-			}
-		} catch (error) {
-			console.error('Error performing search:', error);
-			console.error('Response data:', error.response ? error.response.data : 'No response data');
-			message.reply('An error occurred while performing the search.');
-		}
-// translation logic (need !translate at the end of the message)
-	} else if (message.content.toLowerCase().endsWith('!translate')) {
-		const contentToTranslate = message.content.slice(0, -10).trim(); // Remove the '!translate' part
-		const detectedLanguages = langdetect.detect(contentToTranslate);
-		const detectedLanguage = Array.isArray(detectedLanguages) && detectedLanguages.length > 0 ? detectedLanguages[0].lang : 'en';
-
-		if (detectedLanguage !== 'en') {
 			try {
-				const [translation] = await translate.translate(contentToTranslate, 'en');
-				message.reply(`Detected language: ${detectedLanguage}. Translated to English: ${translation}`);
+				const response = await axios.get(searchUrl);
+				if (response.data.items && response.data.items.length > 0) {
+					const firstResult = response.data.items[0];
+					if (isUnsafeContent(firstResult.title) || isUnsafeContent(firstResult.snippet)) {
+						handleUnsafeSearch(message);
+					} else {
+						const note = '\n\n*Note: Some searches may be different due to Google Safe Search being active.*';
+						const shortAnswer = `${firstResult.title}\n${firstResult.snippet}${note}`;
+						const fullAnswer = `${firstResult.title}\n${firstResult.snippet}\n${firstResult.link}`;
+
+						const row = new ActionRowBuilder().addComponents(
+							new ButtonBuilder()
+								.setCustomId('showMore')
+								.setLabel('Show More')
+								.setStyle(ButtonStyle.Primary)
+						);
+
+						const sentMessage = await message.reply({ content: shortAnswer, components: [row] });
+
+						const filter = i => i.customId === 'showMore' && i.user.id === message.author.id;
+						const collector = sentMessage.createMessageComponentCollector({ filter, time: 15000 });
+
+						collector.on('collect', async i => {
+							if (i.customId === 'showMore') {
+								await i.update({ content: fullAnswer, components: [] });
+							}
+						});
+
+						collector.on('end', collected => {
+							if (collected.size === 0) {
+								sentMessage.edit({ components: [] });
+							}
+						});
+					}
+				} else {
+					message.reply('No results found.');
+				}
 			} catch (error) {
-				console.error('Error translating:', error);
-				message.reply('An error occurred while translating the message.');
+				if (error.response && error.response.data.error.errors.some(e => e.domain === 'global' && e.reason === 'invalidArgument')) {
+					handleUnsafeSearch(message);
+				} else {
+					console.error('Error performing search:', error);
+					console.error('Response data:', error.response ? error.response.data : 'No response data');
+					message.reply('An error occurred while performing the search.');
+				}
+				// translation logic (need !translate at the end of the message)
+			}
+		} else if (message.content.toLowerCase().endsWith('!translate')) {
+			const contentToTranslate = message.content.slice(0, -10).trim(); // Remove the '!translate' part
+			const detectedLanguages = langdetect.detect(contentToTranslate);
+			const detectedLanguage = Array.isArray(detectedLanguages) && detectedLanguages.length > 0 ? detectedLanguages[0].lang : 'en';
+
+			if (detectedLanguage !== 'en') {
+				try {
+					const [translation] = await translate.translate(contentToTranslate, 'en');
+					message.reply(`Detected language: ${detectedLanguage}. Translated to English: ${translation}`);
+				} catch (error) {
+					console.error('Error translating:', error);
+					message.reply('An error occurred while translating the message.');
+				}
 			}
 		}
 	}
-}
 });
 
