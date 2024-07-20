@@ -14,6 +14,10 @@ module.exports = {
                 name: 'ping',
                 description: 'Replies with pong.',
             },
+            {
+                name: '!translate',
+                description: 'Translates the provided text to a specified language.',
+            }
             // Other commmands later hard code
         ];
 

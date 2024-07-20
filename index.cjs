@@ -135,6 +135,7 @@ const translate = new Translate({
     key: process.env.GOOGLE_TRANSLATION_API_KEY, 
   });
 
+
   client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
@@ -144,8 +145,32 @@ const translate = new Translate({
         handleSuspiciousLinks(message);
         handleSpam(message);
 
+		const https = require('https');
+
+		if (message.content.toLowerCase().endsWith('!search')) {
+            const query = message.content.slice(0, -7).trim();
+            const apiKey = process.env.GOOGLE_CUSTOM_SEARCH_API_KEY;
+            const cx = process.env.GOOGLE_CUSTOM_SEARCH_UNIQUE_ID;
+            const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(query)}`;
+
+            try {
+                const response = await axios.get(searchUrl);
+                if (response.data.items && response.data.items.length > 0) {
+                    const firstResult = response.data.items[0];
+                    message.reply(`**${firstResult.title}**\n${firstResult.snippet}\n${firstResult.link}`);
+                } else {
+                    message.reply('No results found.');
+                }
+            } catch (error) {
+                console.error('Error performing search:', error);
+                console.error('Response data:', error.response ? error.response.data : 'No response data');
+                message.reply('An error occurred while performing the search.');
+            }
+        }
+		
+	
 // translation logic (need !translate at the end of the message)
-		if (message.content.toLowerCase().endsWith('!translate')) {
+		else if (message.content.toLowerCase().endsWith('!translate')) {
 			const contentToTranslate = message.content.slice(0, -10).trim(); // Remove the '!translate' part
 			const detectedLanguages = langdetect.detect(contentToTranslate);
 			const detectedLanguage = Array.isArray(detectedLanguages) && detectedLanguages.length > 0 ? detectedLanguages[0].lang : 'en';
