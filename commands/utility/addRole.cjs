@@ -16,7 +16,7 @@ module.exports = {
         const member = interaction.member;
         const guild = interaction.guild;
 
-        if (!guild.owner || guild.permissions.includes('MANAGE_GUILD')) {
+        if (member.id !== guild.ownerId && !member.permissions.has('MANAGE_GUILD')) {
             return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
         }
 
