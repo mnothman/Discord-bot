@@ -11,7 +11,21 @@ Example of 3 separate messages being sent with profanity:  <br />  <br />
 ![profanityfilter1](https://github.com/user-attachments/assets/05698dcb-537a-4298-9dab-2c2bea68fa0e)  <br />  <br />
 
 Our bot includes a spam prevention feature that automatically detects and manages spam messages. If a user sends multiple messages in quick succession, the bot temporarily restricts the user to prevent further spam, ensuring a clean and orderly chat environment. This feature can be turned off or enabled/disabled in chosen chat rooms by moderators.  <br />  <br />
-![spammingexample](https://github.com/user-attachments/assets/fe2b72c4-a946-4f7c-9795-e502b325cbdf)  <br />  <br />  <br />  <br />
+![spammingexample](https://github.com/user-attachments/assets/fe2b72c4-a946-4f7c-9795-e502b325cbdf)  <br />  <br />  
+
+
+Our bot also features a convenient search functionality powered by the Google Custom Search API. Users can append !search to their queries, and the bot will provide relevant search results directly in the chat. To ensure a safe browsing experience, Google SafeSearch is enabled and moderators can add restricted words to be filtered out. The bot will warn users and take action if inappropriate content is detected. <br />  <br />
+![searchexample1](https://github.com/user-attachments/assets/5abbd54b-c336-4da2-b8cf-42cbd08231f7)<br />  <br />
+More button displays link: <br />
+![searchexample2](https://github.com/user-attachments/assets/b56e6ab2-d0ac-4752-b41d-1cf08ccb9902) <br />  <br />
+![searchexample3](https://github.com/user-attachments/assets/ca4f2c3e-c3f3-4941-927a-6124cb45d6d3) <br />  <br />
+
+
+<br />  <br />
+
+
+
+
 
 .env missing:
 DISC_TOKEN="token for bot"
