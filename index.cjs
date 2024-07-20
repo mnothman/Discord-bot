@@ -1,8 +1,8 @@
 const { Client, Collection, GatewayIntentBits, Events, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const { handleProfanity } = require('./Profanitytimeout.js');
-const { handleSuspiciousLinks } = require('./MessageFilter.js');
-const { handleSpam } = require('./SpamPrevention.js');
-const { handleUnsafeSearch, handleUnsafeSearchError, isUnsafeContent } = require('./UnsafeSearch.js');
+const { handleProfanity } = require('./commands/Profanitytimeout.js');
+const { handleSuspiciousLinks } = require('./commands/MessageFilter.js');
+const { handleSpam } = require('./commands/SpamPrevention.js');
+const { handleUnsafeSearch, handleUnsafeSearchError, isUnsafeContent } = require('./commands/UnsafeSearch.js');
 const { Translate } = require('@google-cloud/translate').v2;
 const langdetect = require('langdetect');
 const dotenv = require('dotenv');
