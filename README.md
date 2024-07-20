@@ -20,6 +20,10 @@ More button displays link: <br />
 ![searchexample2](https://github.com/user-attachments/assets/b56e6ab2-d0ac-4752-b41d-1cf08ccb9902) <br />  <br />
 ![searchexample3](https://github.com/user-attachments/assets/ca4f2c3e-c3f3-4941-927a-6124cb45d6d3) <br />  <br />
 
+Ability to add/remove/create roles using slash command <br />  <br />
+![addrmvroleex2](https://github.com/user-attachments/assets/3d4fc1c4-8b4d-4ae1-98ed-d8b34732273a)  <br />  <br />
+![addrmvroleex2](https://github.com/user-attachments/assets/6040712f-120b-4bd6-96c7-582d574b1dd9)   <br />  <br />
+
 
 <br />  <br />
 
