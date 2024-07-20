@@ -1,4 +1,4 @@
-const { Client, Collection, GatewayIntentBits, Events } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, Events, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { handleProfanity } = require('./Profanitytimeout.js');
 const { handleSuspiciousLinks } = require('./MessageFilter.js');
 const { handleSpam } = require('./SpamPrevention.js');
@@ -136,55 +136,78 @@ const translate = new Translate({
   });
 
 
-  client.on('messageCreate', async (message) => {
-    if (message.author.bot) return;
+client.on('messageCreate', async (message) => {
+if (message.author.bot) return;
 
-    const profanityDeleted = await handleProfanity(message);
+const profanityDeleted = await handleProfanity(message);
 
-    if (!profanityDeleted) {
-        handleSuspiciousLinks(message);
-        handleSpam(message);
+if (!profanityDeleted) {
+	handleSuspiciousLinks(message);
+	handleSpam(message);
 
-		const https = require('https');
+	if (message.content.toLowerCase().endsWith('!search')) {
+		const query = message.content.slice(0, -7).trim();
+		const apiKey = process.env.GOOGLE_CUSTOM_SEARCH_API_KEY;
+		const cx = process.env.GOOGLE_CUSTOM_SEARCH_UNIQUE_ID;
+		const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(query)}`;
 
-		if (message.content.toLowerCase().endsWith('!search')) {
-            const query = message.content.slice(0, -7).trim();
-            const apiKey = process.env.GOOGLE_CUSTOM_SEARCH_API_KEY;
-            const cx = process.env.GOOGLE_CUSTOM_SEARCH_UNIQUE_ID;
-            const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(query)}`;
+		console.log('Search URL:', searchUrl);
 
-            try {
-                const response = await axios.get(searchUrl);
-                if (response.data.items && response.data.items.length > 0) {
-                    const firstResult = response.data.items[0];
-                    message.reply(`**${firstResult.title}**\n${firstResult.snippet}\n${firstResult.link}`);
-                } else {
-                    message.reply('No results found.');
-                }
-            } catch (error) {
-                console.error('Error performing search:', error);
-                console.error('Response data:', error.response ? error.response.data : 'No response data');
-                message.reply('An error occurred while performing the search.');
-            }
-        }
-		
-	
+		try {
+			const response = await axios.get(searchUrl);
+			if (response.data.items && response.data.items.length > 0) {
+				const firstResult = response.data.items[0];
+				const shortAnswer = `${firstResult.title}\n${firstResult.snippet}`;
+				const fullAnswer = `${firstResult.title}\n${firstResult.snippet}\n${firstResult.link}`;
+
+				const row = new ActionRowBuilder().addComponents(
+					new ButtonBuilder()
+						.setCustomId('showMore')
+						.setLabel('Show More')
+						.setStyle(ButtonStyle.Primary)
+				);
+
+
+				const sentMessage = await message.reply({ content: shortAnswer, components: [row] });
+
+				const filter = i => i.customId === 'showMore' && i.user.id === message.author.id;
+				const collector = sentMessage.createMessageComponentCollector({ filter, time: 15000 });
+
+				collector.on('collect', async i => {
+					if (i.customId === 'showMore') {
+						await i.update({ content: fullAnswer, components: [] });
+					}
+				});
+
+				collector.on('end', collected => {
+					if (collected.size === 0) {
+						sentMessage.edit({ components: [] });
+					}
+				});
+			} else {
+				message.reply('No results found.');
+			}
+		} catch (error) {
+			console.error('Error performing search:', error);
+			console.error('Response data:', error.response ? error.response.data : 'No response data');
+			message.reply('An error occurred while performing the search.');
+		}
 // translation logic (need !translate at the end of the message)
-		else if (message.content.toLowerCase().endsWith('!translate')) {
-			const contentToTranslate = message.content.slice(0, -10).trim(); // Remove the '!translate' part
-			const detectedLanguages = langdetect.detect(contentToTranslate);
-			const detectedLanguage = Array.isArray(detectedLanguages) && detectedLanguages.length > 0 ? detectedLanguages[0].lang : 'en';
+	} else if (message.content.toLowerCase().endsWith('!translate')) {
+		const contentToTranslate = message.content.slice(0, -10).trim(); // Remove the '!translate' part
+		const detectedLanguages = langdetect.detect(contentToTranslate);
+		const detectedLanguage = Array.isArray(detectedLanguages) && detectedLanguages.length > 0 ? detectedLanguages[0].lang : 'en';
 
-			if (detectedLanguage !== 'en') {
-				try {
-					const [translation] = await translate.translate(contentToTranslate, 'en');
-					message.reply(`Detected language: ${detectedLanguage}. Translated to English: ${translation}`);
-				} catch (error) {
-					console.error('Error translating:', error);
-					message.reply('An error occurred while translating the message.');
-				}
+		if (detectedLanguage !== 'en') {
+			try {
+				const [translation] = await translate.translate(contentToTranslate, 'en');
+				message.reply(`Detected language: ${detectedLanguage}. Translated to English: ${translation}`);
+			} catch (error) {
+				console.error('Error translating:', error);
+				message.reply('An error occurred while translating the message.');
 			}
 		}
 	}
-	});
+}
+});
 
