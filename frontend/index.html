@@ -1,8 +1,3 @@
-<!--
-  | Website designed by JstnLT (https://jstnlt.my.id)
-  | This project is open source: https://github.com/JastinXyz/discord-bot-landing-page-web
--->
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -84,22 +79,17 @@
         </div>
 
         <div class="navbar-end">
-          <a href="#" class="navbar-item is-tab" target="_blank">
+          <a href="https://discord.gg/aFkGVTVgDa" class="navbar-item is-tab" target="_blank">
             <i class="fa-brands fa-discord"></i>
           </a>
 
-          <a href="#" class="navbar-item is-tab" target="_blank">
+          <a href="https://github.com/mnothman" class="navbar-item is-tab" target="_blank">
             <i class="fa-brands fa-github"></i>
           </a>
 
           <div class="navbar-item">
             <div class="buttons">
-              <!-- <a href="https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=identify+guilds+email+connections+gdm.join+guilds.join" class="button is-blurple">
-                <strong
-                  ><i class="fa-solid fa-right-to-bracket mr-2"></i>
-                  Login</strong
-                >
-              </a> -->
+<!-- login is handled in login.js -->
               <button id="login" class="button is-blurple">
                 <strong><i class="fa-solid fa-right-to-bracket mr-2"></i> Login</strong>
               </button>
@@ -129,15 +119,13 @@
 
                 <!-- new -->
               </div>
-              <!-- <a id="login" style="display: none;" href="https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=identify+guilds+email+connections+gdm.join+guilds.join">Login</a> -->
-              <!-- <a id="login" style="display: none;" href="https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&response_type=token&redirect_uri=http%3A%2F%2Flocalhost%3A5000&scope=identify+email+connections+guilds+gdm.join+guilds.join">Login</a> -->
-              <!-- <button id="add-to-server">Add to your server</button> -->
-<!-- need to switch this link to the login one  -->
-<!-- https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=bot -->
-        <a href="https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=bot" class="button is-primary is-outlined">
+             
+    
+<!-- AFTER THE USER CLICKS ADD TO SERVER IT WILL AUTOMATICALLY TAKE THEM TO THEIR DISCORD SERVER THEY ADDED TO -->
+<a href="https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=bot" class="button is-primary is-outlined">
 
-                <!-- <a href="https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=identify+guilds+email+connections+gdm.join+guilds.join" class="button is-primary is-outlined"> -->
-                  <strong><i class="fa-solid fa-crown"></i> Add to server</strong>
+
+                    <strong><i class="fa-solid fa-crown"></i> Add to server</strong>
                 </a>
               </div>
             </div>
@@ -356,11 +344,10 @@
       <div class="columns">
         <div class="column has-text-left">
           <p class="title has-text-weight-bold">
-            Ready to try <span class="blurple">[your bot]</span>?
+            Ready to try <span class="blurple">our moderation assistant</span>?
           </p>
           <p class="subtitle mt-3 has-text-gray">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+<!-- anything  -->
           </p>
           <a href="#" class="button is-blurple is-medium"
             ><strong><i class="fa-solid fa-book"></i> Get Started</strong></a
@@ -376,7 +363,7 @@
     <footer class="footer bg-base">
       <div class="content has-text-centered has-text-white">
         <div class="mb-2">
-          <a href="#" class="has-text-white" target="_blank">
+          <a href="https://discord.gg/aFkGVTVgDa" class="has-text-white" target="_blank">
             <i class="fa-brands fa-discord"></i>
           </a>
           &nbsp; &nbsp;
@@ -386,21 +373,16 @@
         </div>
 
         <p>
-          <span class="has-text-weight-bold">[Your Bot]</span>
+          <!-- <span class="has-text-weight-bold"> your bot</span> -->
           <br />
-          &copy; <span id="cp-year"></span> Copyright [Bot Owner]. All Rights
+          &copy; <span id="cp-year"></span> Copyright. All Rights
           Reserved.
         </p>
 
         <!-- credit to original owner -->
         <p style="letter-spacing: 0.1em;" class="is-uppercase">
-          Website Designed By
-          <a
-            href="https://jstnlt.my.id"
-            class="blurple has-text-weight-bold"
-            target="_blank"
-            >JstnLT</a
-          >.<br>The Original Website Design is Open Source on <a
+
+          <br>The Original Website Design is Open Source on <a
             href="https://github.com/JastinXyz/discord-bot-landing-page-web"
             class="blurple has-text-weight-bold"
             target="_blank"
@@ -424,7 +406,12 @@
         // The code below redirects to the Discord authorization URL.
         // window.location.href = 'https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=bot';
         
-                window.location.href = 'https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=identify+guilds+email+connections+gdm.join+guilds.join';
+
+
+        //After logging in, redirects user to homepage and they can click add server with their login saved, if they don't login and try
+        //to add server it will prompt for login as well
+        //change this to reroute to user dashboard with their bot settings and authorized profanity settings etc
+        window.location.href = 'https://discord.com/oauth2/authorize?client_id=1177780282003296387&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000&scope=gdm.join+identify+guilds+guilds.join';
       });
     </script>
   </body>

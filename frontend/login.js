@@ -68,6 +68,7 @@ window.onload = () => {
 
         document.getElementById('add-to-server').addEventListener('click', () => {
             // Redirect to the authorization URL when the button is clicked
+            //Works for adding to server. Is not implemented anywhere, add to server is handled in index.html
             window.location.href = 'https://discord.com/api/oauth2/authorize?client_id=1177780282003296387&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=bot';
         });
 }
